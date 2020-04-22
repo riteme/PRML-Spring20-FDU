@@ -29,13 +29,13 @@ def reverseDigits(digitNums):
     return digitNums[::-1]
 
 
-def convertNum2Digits(Num):
+def convertNum2Digits(Num, mp):
     '''convert an integer to a list of digits
     Example: 133412 ==> [1, 3, 3, 4, 1, 2]
     '''
     strNum = str(Num)
     chNums = list(strNum)
-    digitNums = [int(o) for o in strNum]
+    digitNums = [mp[int(o)] for o in strNum]
     return digitNums
 
 
@@ -65,7 +65,7 @@ def results_converter(res_lst):
     res = [reverseDigits(digits) for digits in res_lst]
     return [convertDigits2Num(digits) for digits in res]
 
-def prepare_batch(Nums1, Nums2, results, maxlen):
+def prepare_batch(Nums1, Nums2, results, mp, maxlen):
     '''prepare a mini-batch, reverse the list of digits and padding to `maxlen`
     Args:
         Nums1: shape(batch_size,)
@@ -77,16 +77,16 @@ def prepare_batch(Nums1, Nums2, results, maxlen):
         Nums2: shape(batch_size, maxlen)
         results: shape(batch_size, maxlen)
     '''
-    Nums1 = [convertNum2Digits(o) for o in Nums1]
-    Nums2 = [convertNum2Digits(o) for o in Nums2]
-    results = [convertNum2Digits(o) for o in results]
+    Nums1 = [convertNum2Digits(o, mp) for o in Nums1]
+    Nums2 = [convertNum2Digits(o, mp) for o in Nums2]
+    results = [convertNum2Digits(o, mp) for o in results]
 
     Nums1 = [list(reverseDigits(o)) for o in Nums1]
     Nums2 = [list(reverseDigits(o)) for o in Nums2]
     results = [list(reverseDigits(o)) for o in results]
 
-    Nums1 = [pad2len(o, maxlen) for o in Nums1]
-    Nums2 = [pad2len(o, maxlen) for o in Nums2]
-    results = [pad2len(o, maxlen) for o in results]
+    Nums1 = [pad2len(o, maxlen, mp[0]) for o in Nums1]
+    Nums2 = [pad2len(o, maxlen, mp[0]) for o in Nums2]
+    results = [pad2len(o, maxlen, mp[0]) for o in results]
 
     return Nums1, Nums2, results
