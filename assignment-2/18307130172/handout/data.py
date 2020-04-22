@@ -1,17 +1,24 @@
 
 import numpy as np
+import random
 
+
+# def gen_data_batch(batch_size, start, end):
+#     '''sample a mini-batch from the interval (start, end)
+#     Args :
+#         batch_size: batch_size
+#         start: start number
+#         end: end number
+#     '''
+#     numbers_1 = np.random.randint(start, end, batch_size)
+#     numbers_2 = np.random.randint(start, end, batch_size)
+#     results = numbers_1 + numbers_2
+#     return numbers_1, numbers_2, results
 
 def gen_data_batch(batch_size, start, end):
-    '''sample a mini-batch from the interval (start, end)
-    Args :
-        batch_size: batch_size
-        start: start number
-        end: end number
-    '''
-    numbers_1 = np.random.randint(start, end, batch_size)
-    numbers_2 = np.random.randint(start, end, batch_size)
-    results = numbers_1 + numbers_2
+    numbers_1 = [random.randint(start, end) for i in range(batch_size)]
+    numbers_2 = [random.randint(start, end) for i in range(batch_size)]
+    results = [x + y for x, y in zip(numbers_1, numbers_2)]
     return numbers_1, numbers_2, results
 
 
