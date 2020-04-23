@@ -16,8 +16,8 @@ import random
 #     return numbers_1, numbers_2, results
 
 def gen_data_batch(batch_size, start, end):
-    numbers_1 = [random.randint(start, end) for i in range(batch_size)]
-    numbers_2 = [random.randint(start, end) for i in range(batch_size)]
+    numbers_1 = [random.randrange(start, end) for i in range(batch_size)]
+    numbers_2 = [random.randrange(start, end) for i in range(batch_size)]
     results = [x + y for x, y in zip(numbers_1, numbers_2)]
     return numbers_1, numbers_2, results
 

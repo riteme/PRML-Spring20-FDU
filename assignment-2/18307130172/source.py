@@ -16,10 +16,10 @@ if __name__ == '__main__':
         mp = list(range(10))
         if arg.relabel:
             random.shuffle(mp)
-        print(mp)
+        # print(mp)
 
         pt_main(arg.len, mp, arg.cuda)
-        pt_adv_main()
+        pt_adv_main(arg.len, arg.cuda)
     elif arg.framework == 'tf':
         tf_main()
         tf_adv_main()
