@@ -102,6 +102,8 @@ def train_one_step(model, optimizer, x, y, label, dev):
 def train(steps, model, optimizer, num_digits, dev, mp):
     loss = 0.0
     accuracy = 0.0
+
+    loss_history = []
     for step in range(steps):
         # datas = gen_data_batch(batch_size=64, start=0, end=5 * 10**num_digits)
         datas = gen_data_batch(batch_size=64, start=0, end=10**(num_digits + 1))
@@ -109,12 +111,13 @@ def train(steps, model, optimizer, num_digits, dev, mp):
         Nums1, Nums2, results = prepare_batch(*datas, mp, maxlen=num_digits + 2)
         loss = train_one_step(model, optimizer, Nums1,
                               Nums2, results, dev)
-        if (step + 1) % 50 == 0:
+        if (step + 1) % 10 == 0:
             # for o in list(zip(results, Nums1, Nums2))[:2]:
             #     print(o[1], o[2], o[0])
+            loss_history.append(loss)
             print('step', step+1, ': loss', loss)
 
-    return loss
+    return loss_history
 
 
 def evaluate(model, num_digits, dev, mp):
@@ -160,8 +163,10 @@ def pt_main(num_digits, mp, use_cuda=False):
     dev = require_device(use_cuda)
     model = myPTRNNModel().to(dev)
     optimizer = torch.optim.Adam(params=model.parameters(), lr=0.03)
-    train(500, model, optimizer, num_digits, dev, mp)
+    loss_history = train(500, model, optimizer, num_digits, dev, mp)
     evaluate(model, num_digits, dev, mp)
+
+    return loss_history
 
 
 def pt_adv_main(num_digits, use_cuda=False):
@@ -173,7 +178,9 @@ def pt_adv_main(num_digits, use_cuda=False):
     NUM_STEPS = 500
     BATCH_SIZE = 64
     TEST_SIZE = 10000
-    CHECKOUT_INTERVAL = 50
+    CHECKOUT_INTERVAL = 10
+
+    loss_history = []
     for i in range(NUM_STEPS):
         x, y, z = model.generate_data(BATCH_SIZE, 0, 5 * 10**num_digits, device=dev)
         x, y, z = model.generate_data(BATCH_SIZE, 0, 10**(num_digits + 1), device=dev)
@@ -185,6 +192,7 @@ def pt_adv_main(num_digits, use_cuda=False):
         optimizer.step()
 
         if (i + 1) % CHECKOUT_INTERVAL == 0:
+            loss_history.append(loss.item())
             print(f'[{i + 1}] loss = {loss.item()}')
 
     x, y, z = model.generate_data(
@@ -207,3 +215,5 @@ def pt_adv_main(num_digits, use_cuda=False):
 
     correct_cnt = (z == z_pred).all(-1).sum().item()
     print(f'Accuracy: {correct_cnt / TEST_SIZE}')
+
+    return loss_history
